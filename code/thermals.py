@@ -22,6 +22,8 @@ campaign_dict = {'C0':0,'C1':1,'C2':2,'C3':3,'C4':4,'C5':5,'C6':6,'C7':7,'C8':8,
                  'C12':12,'C13':13,'C14':14,'C15':15,'C16':16,'C17':17,
                  'C18':18,'C19':19}
 
+jitter_dict = {'BoardTemperatures':0.011, 'TelescopeTemperatureTH_2':1.0,
+        'TelescopeTemperaturePED':0.05, 'TelescopeTemperatureTH_1':0.35}
 
 def get_temperature_data_from_suffix(file_suffix='BoardTemperatures'):
     """Get all-campaign temperature telemetry given a filetype
@@ -55,7 +57,7 @@ def get_temperature_data_from_suffix(file_suffix='BoardTemperatures'):
 
 
 
-def pre_process_temperature_data(df, add_jitter=False):
+def pre_process_temperature_data(df, add_jitter=None):
     """Pre-process the data in preparation for use as regressors.
 
         Peforms these tasks:
@@ -82,8 +84,18 @@ def pre_process_temperature_data(df, add_jitter=False):
     temp_cols = df.columns[3:-1]
     for col in temp_cols:
         df[col] = 273.15 + df[col]
-        if add_jitter:
-            scale = 0.011 # experimentally determined discretization noise
-            df[col] += np.random.normal(loc=0, scale=0.011, size=len(df))
+        if add_jitter is not None:
+            scale = jitter_dict[add_jitter]
+            df[col] += np.random.normal(loc=0, scale=scale, size=len(df))
 
     return df
+
+
+def get_vector_derivative_spline(x, y, ss=1):
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+
+        tck, u = splprep(np.vstack((x, y)), s=ss)
+        exes, model = splev(u, tck)
+        exes, deriv = splev(u, tck, der=1)
+    return model, deriv

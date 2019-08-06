@@ -4,13 +4,13 @@ Jupyter Notebooks
 These notebooks explore the Kepler/K2 mission spacecraft telemetry.  They notebooks are organized by topics.
 
 1. Introduction
-  - Overview of Kepler spacecraft
-  - Expectations for signals
-  - Overview of available files
-  - Data pre-processing
+  - [x] Overview of Kepler spacecraft
+  - [x] Expectations for signals
+  - [x] Overview of available files
+  - [x] Data pre-processing
 
 2. Sampling and fitting
-  - Existing sampling
+  - [x] Existing sampling
   - Fitting signals with splines
   - Fitting signals with Gaussian Processes
   - Registration of different times
